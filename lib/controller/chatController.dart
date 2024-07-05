@@ -7,8 +7,8 @@ import 'package:final_project/model/UserModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
-
 import '../model/ChatModel.dart';
+import '../services/notification/notification_service.dart';
 
 class ChatController extends GetxController {
   final auth = FirebaseAuth.instance;
@@ -112,6 +112,15 @@ class ChatController extends GetxController {
         roomDetails.toJson(),
       );
       await contactController.saveContact(targetUser);
+     // await NotificationService.createNotification(targetUser, message);
+      await db.collection("MessageNotifications").add({
+        'targetUserId': targetUserId,
+        'message': message,
+        'senderId': auth.currentUser!.uid,
+        'senderName': profileController.currentUser.value.name,
+        'timestamp': Timestamp.now(),
+      });
+      print("here is error for notification");
     } catch (e) {
       print(e);
     }
@@ -164,6 +173,15 @@ class ChatController extends GetxController {
         roomDetails.toJson(),
       );
       await contactController.saveContact(targetUser);
+      //await NotificationService.createNotification(targetUser, "Sent an audio message");
+      await db.collection("MessageNotifications").add({
+        'targetUserId': targetUserId,
+        'message': "Sent an audio message",
+        'senderId': auth.currentUser!.uid,
+        'senderName': profileController.currentUser.value.name,
+        'timestamp': Timestamp.now(),
+      });
+      print("here is error for notification");
     } catch (e) {
       print(e);
     }
